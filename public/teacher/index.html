@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>アテンハブ - 教師ダッシュボード</title>
+  <link rel="stylesheet" href="../shared/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <h1>アテンハブ</h1>
+      <span class="role-badge teacher">教師</span>
+    </div>
+    <div class="header-right">
+      <span id="userInfo"></span>
+      <button id="logoutBtn" class="btn btn-secondary">ログアウト</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <nav class="tabs" role="tablist">
+      <button class="tab active" role="tab" data-tab="attendance">出席記録</button>
+      <button class="tab" role="tab" data-tab="students">担当生徒</button>
+    </nav>
+
+    <section id="tab-attendance" class="tab-panel active">
+      <div class="panel-header">
+        <h2>出席記録</h2>
+        <div class="attendance-filter">
+          <select id="classFilter" class="select">
+            <option value="">クラスを選択</option>
+          </select>
+          <input type="date" id="dateFilter" class="date-input" value="">
+        </div>
+      </div>
+      <div id="attendanceList" class="list"></div>
+    </section>
+
+    <section id="tab-students" class="tab-panel hidden">
+      <div class="panel-header">
+        <h2>担当生徒一覧</h2>
+        <select id="studentClassFilter" class="select">
+          <option value="">クラスを選択</option>
+        </select>
+      </div>
+      <div id="studentsList" class="list"></div>
+    </section>
+  </main>
+
+  <script type="module" src="./teacher.js"></script>
+</body>
+</html>
