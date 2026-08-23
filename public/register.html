@@ -241,8 +241,12 @@
         return;
       }
 
-      // slug生成（学校名から自動生成）
-      const slug = schoolName.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+      // slug生成（学校名から自動生成、日本語対応）
+      let slug = schoolName.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+      if (!slug) {
+        // 日本語のみ等でslugが空になる場合はタイムスタンプベースで生成
+        slug = 'school-' + Date.now().toString(36);
+      }
 
       const submitBtn = form.querySelector('button[type="submit"]');
       submitBtn.disabled = true;
