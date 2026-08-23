@@ -6,27 +6,54 @@ const API_BASE = isLocalhost ? '/api' : 'https://atnhub-api.ryotagtagtag-wq.work
 class ApiClient {
   constructor() {
     this.token = null;
+    this._storageAvailable = this._checkStorage();
+  }
+
+  _checkStorage() {
+    try {
+      const test = '__storage_test__';
+      localStorage.setItem(test, test);
+      localStorage.removeItem(test);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  _getStorage() {
+    if (!this._storageAvailable) return null;
+    try {
+      return localStorage;
+    } catch (e) {
+      this._storageAvailable = false;
+      return null;
+    }
   }
 
   getToken() {
     if (!this.token) {
-      this.token = localStorage.getItem('atnhub_token');
+      const storage = this._getStorage();
+      if (storage) this.token = storage.getItem('atnhub_token');
     }
     return this.token;
   }
 
   setToken(token) {
     this.token = token;
-    if (token) {
-      localStorage.setItem('atnhub_token', token);
-    } else {
-      localStorage.removeItem('atnhub_token');
+    const storage = this._getStorage();
+    if (storage) {
+      if (token) {
+        storage.setItem('atnhub_token', token);
+      } else {
+        storage.removeItem('atnhub_token');
+      }
     }
   }
 
   clearToken() {
     this.token = null;
-    localStorage.removeItem('atnhub_token');
+    const storage = this._getStorage();
+    if (storage) storage.removeItem('atnhub_token');
   }
 
   async request(path, options = {}) {
