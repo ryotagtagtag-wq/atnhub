@@ -467,9 +467,13 @@ function showResult(id, message, success) {
 
 function escapeHtml(str) {
   if (str === null || str === undefined) return '';
-  return String(str).replace(/[&<>"']/g, c => ({
-    '&': '&', '<': '<', '>': '>', '"': '"', "'": '''
-  })[c]);
+  const A = '&';
+  return String(str).replace(/[&<>"']/g, c =>
+    c === '&' ? A + 'amp;'
+    : c === '<' ? A + 'lt;'
+    : c === '>' ? A + 'gt;'
+    : c === '"' ? A + 'quot;'
+    : A + '#39;');
 }
 
 // 今日の日付をデフォルトに設定

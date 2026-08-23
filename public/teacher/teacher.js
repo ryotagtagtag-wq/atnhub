@@ -57,7 +57,7 @@ function setupTabs() {
   });
 }
 
-function switchTab(tabName) {
+async function switchTab(tabName) {
   currentTab = tabName;
   tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tabName));
   tabPanels.forEach(p => p.classList.toggle('active', p.id === `tab-${tabName}`));
@@ -203,7 +203,11 @@ logoutBtn.addEventListener('click', async () => {
 
 function escapeHtml(str) {
   if (str === null || str === undefined) return '';
-  return String(str).replace(/[&<>"']/g, c => ({
-    '&': '&', '<': '<', '>': '>', '"': '"', "'": '''
-  })[c]);
+  const A = '&';
+  return String(str).replace(/[&<>"']/g, c =>
+    c === '&' ? A + 'amp;'
+    : c === '<' ? A + 'lt;'
+    : c === '>' ? A + 'gt;'
+    : c === '"' ? A + 'quot;'
+    : A + '#39;');
 }
