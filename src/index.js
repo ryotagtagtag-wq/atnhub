@@ -379,18 +379,12 @@ async function handleLogout(ctx) {
 }
 
 // ---------------------------------------------------------------------------
-// 学校初期化（bootstrap）: schools テーブルが空の時のみ許可
+// 学校初期化（bootstrap）: 複数学校対応
 // ---------------------------------------------------------------------------
 
 /** POST /api/schools/bootstrap — { name, slug, admin_login_id, admin_pin, admin_name } */
 async function handleBootstrap(ctx) {
   const { env, request, respond, ipHash } = ctx;
-
-  // 学校が 1 件でも存在すれば以降の呼び出しは禁止する
-  const schoolCount = await env.DB.prepare('SELECT COUNT(*) AS c FROM schools').first();
-  if ((schoolCount?.c ?? 0) > 0) {
-    return respond({ error: 'すでに初期化されています' }, 403);
-  }
 
   const body = await parseJsonBody(request);
   if (!body) return respond({ error: 'リクエストボディが不正です' }, 400);
