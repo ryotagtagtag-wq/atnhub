@@ -13,14 +13,20 @@ const tabPanels = document.querySelectorAll('.tab-panel');
 const userInfo = document.getElementById('userInfo');
 const logoutBtn = document.getElementById('logoutBtn');
 
-// 初期化
-document.addEventListener('DOMContentLoaded', async () => {
+// 初期化（Rocket Loader対策：DOMContentLoaded済みでも実行されるように）
+async function init() {
   await checkAuth();
   setupTabs();
   setupForms();
   setupModals();
   await loadInitialData();
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
 
 // 認証チェック
 async function checkAuth() {
@@ -63,7 +69,10 @@ function setupForms() {
     const form = e.target;
     const payload = {
       name: form.schoolName.value.trim(),
-      slug: form.schoolName.value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-'),
+      slug: (() => {
+        const s = form.schoolName.value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/^-+|-+$/g, '');
+        return s || 'school-' + Date.now().toString(36);
+      })(),
       admin_login_id: form.adminLoginId.value.trim(),
       admin_pin: form.adminPin.value,
       admin_name: form.adminName.value.trim()
