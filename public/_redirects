@@ -1,17 +1,3 @@
-# Explicitly serve .html files (prevent Cloudflare Pages auto clean URL redirect)
-/register.html /register.html 200
-/login.html /login.html 200
-/admin/index.html /admin/index.html 200
-/teacher/index.html /teacher/index.html 200
-/student/index.html /student/index.html 200
-
-# Clean URLs (rewrite to .html files)
-/register /register.html 200
-/login /login.html 200
-/admin /admin/index.html 200
-/teacher /teacher/index.html 200
-/student /student/index.html 200
-
 # SPA fallback for admin/teacher/student sub-apps
 /admin/* /admin/index.html 200
 /teacher/* /teacher/index.html 200
