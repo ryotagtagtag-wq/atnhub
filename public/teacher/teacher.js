@@ -167,22 +167,26 @@ function updateClassSelects() {
 // 出席記録（グローバル関数として定義してonclickから呼べるようにする）
 window.recordAttendance = async function(btn) {
   const studentId = btn.dataset.studentId;
-  const status = btn.dataset.status === '1';
+  const status = btn.dataset.status === '1' ? 'present' : 'absent';
   const classId = classFilter.value;
   const date = dateFilter.value;
   
   try {
-    await api.recordAttendance({ student_id: studentId, class_id: classId, date, status });
-    btn.textContent = status ? '出席済み → 欠席に変更' : '出席を記録';
-    btn.classList.toggle('btn-primary', !status);
-    btn.classList.toggle('btn-secondary', status);
-    btn.dataset.status = status ? '1' : '0';
+    await api.recordAttendance({ 
+      class_id: parseInt(classId, 10), 
+      date, 
+      records: [{ student_id: parseInt(studentId, 10), status }] 
+    });
+    btn.textContent = status === 'present' ? '出席済み → 欠席に変更' : '出席を記録';
+    btn.classList.toggle('btn-primary', status !== 'present');
+    btn.classList.toggle('btn-secondary', status === 'present');
+    btn.dataset.status = status === 'present' ? '1' : '0';
     // 行のスタイルも更新
     const row = btn.closest('.attendance-row');
-    row.classList.toggle('present', status);
-    row.classList.toggle('absent', !status);
-    row.querySelector('.status-badge').textContent = status ? '出席' : '欠席';
-    row.querySelector('.status-badge').className = `status-badge ${status ? 'present' : 'absent'}`;
+    row.classList.toggle('present', status === 'present');
+    row.classList.toggle('absent', status !== 'present');
+    row.querySelector('.status-badge').textContent = status === 'present' ? '出席' : '欠席';
+    row.querySelector('.status-badge').className = `status-badge ${status === 'present' ? 'present' : 'absent'}`;
   } catch (err) {
     alert(`エラー: ${err.message}`);
   }

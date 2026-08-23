@@ -102,9 +102,29 @@ async function loadAttendanceHistory() {
   if (!currentStudent) return;
   
   try {
-    // 過去30日分の履歴を取得（API側でフィルタされる想定）
-    const data = await api.getAttendance(currentStudent.class_id, '');
-    attendanceHistory = data || [];
+    // 過去30日分の履歴を取得（日付ごとにAPIを呼び出す）
+    const today = new Date();
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+    
+    const allAttendance = [];
+    const currentDate = new Date(thirtyDaysAgo);
+    
+    while (currentDate <= today) {
+      const dateStr = currentDate.toISOString().split('T')[0];
+      try {
+        const data = await api.getAttendance(currentStudent.class_id, dateStr);
+        if (data && data.length > 0) {
+          allAttendance.push(...data);
+        }
+      } catch (err) {
+        // 個別の日付でエラーがあっても継続
+        console.warn(`日付 ${dateStr} の出席取得エラー:`, err);
+      }
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    
+    attendanceHistory = allAttendance;
     renderHistory();
   } catch (err) {
     console.error('出席履歴読み込みエラー:', err);
@@ -149,10 +169,9 @@ window.checkIn = async function() {
     checkInBtn.textContent = '処理中...';
     
     await api.recordAttendance({
-      student_id: currentStudent.id,
       class_id: currentStudent.class_id,
       date: today,
-      status: true
+      records: [{ student_id: currentStudent.id, status: 'present' }]
     });
     
     // 成功時のUI更新

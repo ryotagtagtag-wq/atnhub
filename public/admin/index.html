@@ -14,17 +14,17 @@
     </div>
     <div class="header-right">
       <span id="userInfo"></span>
-      <button id="logoutBtn" class="btn btn-secondary">ログアウト</button>
+      <button type="button" id="logoutBtn" class="btn btn-secondary">ログアウト</button>
     </div>
   </header>
 
   <main class="main">
     <nav class="tabs" role="tablist">
-      <button class="tab active" role="tab" data-tab="bootstrap">学校登録</button>
-      <button class="tab" role="tab" data-tab="classes">クラス管理</button>
-      <button class="tab" role="tab" data-tab="teachers">教師管理</button>
-      <button class="tab" role="tab" data-tab="students">生徒管理</button>
-      <button class="tab" role="tab" data-tab="attendance">出席確認</button>
+      <button type="button" class="tab active" role="tab" data-tab="bootstrap">学校登録</button>
+      <button type="button" class="tab" role="tab" data-tab="classes">クラス管理</button>
+      <button type="button" class="tab" role="tab" data-tab="teachers">教師管理</button>
+      <button type="button" class="tab" role="tab" data-tab="students">生徒管理</button>
+      <button type="button" class="tab" role="tab" data-tab="attendance">出席確認</button>
     </nav>
 
     <section id="tab-bootstrap" class="tab-panel active">
@@ -36,12 +36,16 @@
           <input type="text" id="schoolName" name="schoolName" required placeholder="例: 静岡県立静岡高等学校">
         </div>
         <div class="form-group">
+          <label for="adminLoginId">管理者ログインID <span class="required">*</span></label>
+          <input type="text" id="adminLoginId" name="adminLoginId" required placeholder="例: admin01">
+        </div>
+        <div class="form-group">
           <label for="adminName">管理者名 <span class="required">*</span></label>
           <input type="text" id="adminName" name="adminName" required placeholder="例: 山田 太郎">
         </div>
         <div class="form-group">
           <label for="adminPin">管理者PIN（6桁） <span class="required">*</span></label>
-          <input type="password" id="adminPin" name="adminPin" required minlength="6" maxlength="6" pattern="\d{6}" placeholder="6桁の数字">
+          <input type="password" id="adminPin" name="adminPin" required minlength="6" maxlength="6" pattern="\d{6}" placeholder="6桁の数字" autocomplete="current-password">
         </div>
         <button type="submit" class="btn btn-primary">学校を登録</button>
       </form>
@@ -51,7 +55,7 @@
     <section id="tab-classes" class="tab-panel hidden">
       <div class="panel-header">
         <h2>クラス管理</h2>
-        <button id="addClassBtn" class="btn btn-primary">クラス追加</button>
+        <button type="button" id="addClassBtn" class="btn btn-primary">クラス追加</button>
       </div>
       <div id="classesList" class="list"></div>
     </section>
@@ -59,7 +63,7 @@
     <section id="tab-teachers" class="tab-panel hidden">
       <div class="panel-header">
         <h2>教師管理</h2>
-        <button id="addTeacherBtn" class="btn btn-primary">教師追加</button>
+        <button type="button" id="addTeacherBtn" class="btn btn-primary">教師追加</button>
       </div>
       <div id="teachersList" class="list"></div>
     </section>
@@ -71,7 +75,7 @@
           <select id="studentClassFilter" class="select">
             <option value="">クラスを選択</option>
           </select>
-          <button id="addStudentBtn" class="btn btn-primary" disabled>生徒追加</button>
+          <button type="button" id="addStudentBtn" class="btn btn-primary" disabled>生徒追加</button>
         </div>
       </div>
       <div id="studentsList" class="list"></div>
@@ -101,8 +105,8 @@
         <input type="text" id="classModalName" name="name" required placeholder="例: 1年A組">
       </div>
       <div class="form-group">
-        <label for="classModalCode">クラスコード <span class="required">*</span></label>
-        <input type="text" id="classModalCode" name="code" required pattern="[A-Z0-9]{4,8}" placeholder="例: 1A2024 (英数字4-8文字)">
+        <label for="classModalGrade">学年（任意）</label>
+        <input type="number" id="classModalGrade" name="grade" min="1" max="6" placeholder="例: 1">
       </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-secondary" id="classModalCancel">キャンセル</button>
@@ -117,18 +121,22 @@
       <h3 id="teacherModalTitle">教師追加</h3>
       <input type="hidden" id="teacherModalId" name="id">
       <div class="form-group">
+        <label for="teacherModalLoginId">ログインID <span class="required">*</span></label>
+        <input type="text" id="teacherModalLoginId" name="login_id" required placeholder="例: teacher01">
+      </div>
+      <div class="form-group">
         <label for="teacherModalName">教師名 <span class="required">*</span></label>
         <input type="text" id="teacherModalName" name="name" required placeholder="例: 鈴木 一郎">
       </div>
       <div class="form-group">
-        <label for="teacherModalClass">担当クラス <span class="required">*</span></label>
-        <select id="teacherModalClass" name="class_id" required>
+        <label for="teacherModalClass">担当クラス（任意）</label>
+        <select id="teacherModalClass" name="class_id">
           <option value="">クラスを選択</option>
         </select>
       </div>
       <div class="form-group">
         <label for="teacherModalPin">PIN（6桁） <span class="required">*</span></label>
-        <input type="password" id="teacherModalPin" name="pin" required minlength="6" maxlength="6" pattern="\d{6}" placeholder="6桁の数字">
+        <input type="password" id="teacherModalPin" name="pin" required minlength="6" maxlength="6" pattern="\d{6}" placeholder="6桁の数字" autocomplete="current-password">
       </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-secondary" id="teacherModalCancel">キャンセル</button>
@@ -153,7 +161,7 @@
       </div>
       <div class="form-group">
         <label for="studentModalPin">PIN（6桁） <span class="required">*</span></label>
-        <input type="password" id="studentModalPin" name="pin" required minlength="6" maxlength="6" pattern="\d{6}" placeholder="6桁の数字">
+        <input type="password" id="studentModalPin" name="pin" required minlength="6" maxlength="6" pattern="\d{6}" placeholder="6桁の数字" autocomplete="current-password">
       </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-secondary" id="studentModalCancel">キャンセル</button>

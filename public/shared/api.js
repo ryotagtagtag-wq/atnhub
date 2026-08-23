@@ -66,7 +66,7 @@ class ApiClient {
 
   // 生徒ログイン
   async loginStudent(payload) {
-    const result = await this.request('/auth/login/student', {
+    const result = await this.request('/auth/login', {
       method: 'POST',
       body: JSON.stringify(payload),
     });

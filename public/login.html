@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>アテンハブ - ログイン</title>
+  <link rel="stylesheet" href="shared/style.css">
+  <style>
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .login-card {
+      width: 100%;
+      max-width: 400px;
+      background: #fff;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+    }
+    .login-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .login-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #2563eb;
+      margin-bottom: 0.5rem;
+    }
+    .login-header p {
+      color: #6b7280;
+    }
+    .role-tabs {
+      display: flex;
+      gap: 0.25rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    .role-tab {
+      flex: 1;
+      padding: 0.75rem;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #6b7280;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      margin-bottom: -2px;
+    }
+    .role-tab:hover {
+      color: #374151;
+    }
+    .role-tab.active {
+      color: #2563eb;
+      border-bottom-color: #2563eb;
+    }
+    .role-panel {
+      display: none;
+    }
+    .role-panel.active {
+      display: block;
+      animation: fadeIn 0.15s ease;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.35rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #374151;
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 0.625rem 0.875rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      font-size: 0.9375rem;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    .btn-login {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      margin-top: 0.5rem;
+    }
+    .error-message {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    .error-message.visible {
+      display: block;
+    }
+    .hint {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      margin-top: 0.25rem;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <h1>アテンハブ</h1>
+        <p>出席管理システム</p>
+      </div>
+
+      <div class="role-tabs" role="tablist">
+        <button type="button" class="role-tab active" role="tab" data-role="student">生徒</button>
+        <button type="button" class="role-tab" role="tab" data-role="teacher">教師</button>
+        <button type="button" class="role-tab" role="tab" data-role="admin">管理者</button>
+      </div>
+
+      <div id="errorMessage" class="error-message"></div>
+
+      <!-- 生徒ログイン -->
+      <div id="panel-student" class="role-panel active" role="tabpanel">
+        <form id="studentLoginForm">
+          <div class="form-group">
+            <label for="studentSchoolCode">学校コード <span class="required">*</span></label>
+            <input type="text" id="studentSchoolCode" name="school_code" required placeholder="例: ABC123" maxlength="6" pattern="[A-Z0-9]{6}">
+          </div>
+          <div class="form-group">
+            <label for="studentClassCode">クラスコード <span class="required">*</span></label>
+            <input type="text" id="studentClassCode" name="class_code" required placeholder="例: 1A2024" pattern="[A-Z0-9]{4,8}">
+          </div>
+          <div class="form-group">
+            <label for="studentNumber">出席番号 <span class="required">*</span></label>
+            <input type="number" id="studentNumber" name="student_number" required min="1" max="99" placeholder="1-99">
+          </div>
+          <div class="form-group">
+            <label for="studentPin">PIN（6桁） <span class="required">*</span></label>
+            <input type="password" id="studentPin" name="pin" required minlength="6" maxlength="6" pattern="\d{6}" placeholder="6桁の数字" autocomplete="current-password">
+          </div>
+          <button type="submit" class="btn btn-primary btn-login">ログイン</button>
+        </form>
+        <p class="hint">クラスコードと出席番号は担任の先生から受け取ってください</p>
+      </div>
+
+      <!-- 教師ログイン -->
+      <div id="panel-teacher" class="role-panel" role="tabpanel">
+        <form id="teacherLoginForm">
+          <div class="form-group">
+            <label for="teacherSchoolCode">学校コード <span class="required">*</span></label>
+            <input type="text" id="teacherSchoolCode" name="school_code" required placeholder="例: ABC123" maxlength="6" pattern="[A-Z0-9]{6}">
+          </div>
+          <div class="form-group">
+            <label for="teacherLoginId">ログインID <span class="required">*</span></label>
+            <input type="text" id="teacherLoginId" name="login_id" required placeholder="例: teacher01">
+          </div>
+          <div class="form-group">
+            <label for="teacherPin">PIN（6桁） <span class="required">*</span></label>
+            <input type="password" id="teacherPin" name="pin" required minlength="6" maxlength="6" pattern="\d{6}" placeholder="6桁の数字" autocomplete="current-password">
+          </div>
+          <button type="submit" class="btn btn-primary btn-login">ログイン</button>
+        </form>
+      </div>
+
+      <!-- 管理者ログイン -->
+      <div id="panel-admin" class="role-panel" role="tabpanel">
+        <form id="adminLoginForm">
+          <div class="form-group">
+            <label for="adminSchoolCode">学校コード <span class="required">*</span></label>
+            <input type="text" id="adminSchoolCode" name="school_code" required placeholder="例: ABC123" maxlength="6" pattern="[A-Z0-9]{6}">
+          </div>
+          <div class="form-group">
+            <label for="adminLoginId">ログインID <span class="required">*</span></label>
+            <input type="text" id="adminLoginId" name="login_id" required placeholder="例: admin01">
+          </div>
+          <div class="form-group">
+            <label for="adminPin">PIN（6桁） <span class="required">*</span></label>
+            <input type="password" id="adminPin" name="pin" required minlength="6" maxlength="6" pattern="\d{6}" placeholder="6桁の数字" autocomplete="current-password">
+          </div>
+          <button type="submit" class="btn btn-primary btn-login">ログイン</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { api } from './shared/api.js';
+
+    // タブ切り替え
+    document.querySelectorAll('.role-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const role = tab.dataset.role;
+        document.querySelectorAll('.role-tab').forEach(t => t.classList.toggle('active', t.dataset.role === role));
+        document.querySelectorAll('.role-panel').forEach(p => p.classList.toggle('active', p.id === `panel-${role}`));
+        hideError();
+      });
+    });
+
+    function showError(message) {
+      const el = document.getElementById('errorMessage');
+      el.textContent = message;
+      el.classList.add('visible');
+    }
+
+    function hideError() {
+      document.getElementById('errorMessage').classList.remove('visible');
+    }
+
+    // 生徒ログイン
+    document.getElementById('studentLoginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideError();
+      const form = e.target;
+      const payload = {
+        school_code: form.school_code.value.trim().toUpperCase(),
+        class_code: form.class_code.value.trim().toUpperCase(),
+        student_number: form.student_number.value.trim(),
+        pin: form.pin.value
+      };
+      try {
+        await api.loginStudent(payload);
+        location.href = '/student/';
+      } catch (err) {
+        showError(err.message);
+      }
+    });
+
+    // 教師ログイン
+    document.getElementById('teacherLoginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideError();
+      const form = e.target;
+      const payload = {
+        school_code: form.school_code.value.trim().toUpperCase(),
+        login_id: form.login_id.value.trim(),
+        pin: form.pin.value
+      };
+      try {
+        await api.loginTeacher(payload);
+        location.href = '/teacher/';
+      } catch (err) {
+        showError(err.message);
+      }
+    });
+
+    // 管理者ログイン
+    document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideError();
+      const form = e.target;
+      const payload = {
+        school_code: form.school_code.value.trim().toUpperCase(),
+        login_id: form.login_id.value.trim(),
+        pin: form.pin.value
+      };
+      try {
+        await api.loginAdmin(payload);
+        location.href = '/admin/';
+      } catch (err) {
+        showError(err.message);
+      }
+    });
+
+    // 既にログイン済みならリダイレクト
+    const token = api.getToken();
+    if (token) {
+      try {
+        const me = await api.me();
+        if (me.role === 'student') location.href = '/student/';
+        else if (me.role === 'teacher') location.href = '/teacher/';
+        else if (me.role === 'school_admin') location.href = '/admin/';
+      } catch (e) {
+        api.clearToken();
+      }
+    }
+  </script>
+</body>
+</html>

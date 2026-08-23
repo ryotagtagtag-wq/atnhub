@@ -1,6 +1,7 @@
 name = "atnhub-api"
 main = "src/index.js"
 compatibility_date = "2026-08-06"
+compatibility_flags = ["nodejs_compat"]
 
 # D1 データベースバインディング
 # `wrangler d1 create atnhub` で作成後の database_id をここに記入
@@ -13,5 +14,3 @@ database_id = "6de7d6b1-ded4-4471-8bd2-d242c6980f5d"  # 作成後に記入
 [vars]
 ENVIRONMENT = "development"
 # CORS_ALLOWED_ORIGINS = "https://atnhub.pages.dev"  # 本番では特定オリジンのみ
-
-# ノード互換モード（crypto.subtle 等使用のため）

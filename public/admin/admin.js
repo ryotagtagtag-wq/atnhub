@@ -62,13 +62,15 @@ function setupForms() {
     e.preventDefault();
     const form = e.target;
     const payload = {
-      school_name: form.schoolName.value.trim(),
-      admin_name: form.adminName.value.trim(),
-      admin_pin: form.adminPin.value
+      name: form.schoolName.value.trim(),
+      slug: form.schoolName.value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-'),
+      admin_login_id: form.adminLoginId.value.trim(),
+      admin_pin: form.adminPin.value,
+      admin_name: form.adminName.value.trim()
     };
     try {
       const result = await api.bootstrap(payload);
-      showResult('bootstrapResult', `学校登録完了！学校コード: <strong>${result.school_code}</strong>`, true);
+      showResult('bootstrapResult', `学校登録完了！学校コード: <strong>${result.school.code}</strong>`, true);
       form.reset();
       await loadClasses();
       await loadTeachers();
@@ -86,7 +88,7 @@ function setupForms() {
     const form = e.target;
     const payload = {
       name: form.name.value.trim(),
-      code: form.code.value.trim().toUpperCase()
+      grade: form.grade.value ? parseInt(form.grade.value, 10) : null
     };
     const id = form.id.value;
     try {
@@ -112,8 +114,9 @@ function setupForms() {
     e.preventDefault();
     const form = e.target;
     const payload = {
+      login_id: form.login_id.value.trim(),
       name: form.name.value.trim(),
-      class_id: form.class_id.value,
+      class_id: form.class_id.value ? parseInt(form.class_id.value, 10) : null,
       pin: form.pin.value
     };
     try {
@@ -137,10 +140,10 @@ function setupForms() {
     e.preventDefault();
     const form = e.target;
     const payload = {
-      name: form.name.value.trim(),
-      class_id: form.class_id.value,
-      number: parseInt(form.number.value, 10),
-      pin: form.pin.value
+      class_id: parseInt(form.class_id.value, 10),
+      student_number: form.number.value.trim(),
+      pin: form.pin.value,
+      name: form.name.value.trim()
     };
     try {
       await api.createStudent(payload);
@@ -194,7 +197,7 @@ function openClassModal(classData = null) {
     title.textContent = 'クラス編集';
     document.getElementById('classModalId').value = classData.id;
     document.getElementById('classModalName').value = classData.name;
-    document.getElementById('classModalCode').value = classData.code;
+    document.getElementById('classModalGrade').value = classData.grade || '';
   } else {
     title.textContent = 'クラス追加';
     document.getElementById('classModalId').value = '';
@@ -210,8 +213,9 @@ function openTeacherModal(teacherData = null) {
   if (teacherData) {
     title.textContent = '教師編集';
     document.getElementById('teacherModalId').value = teacherData.id;
+    document.getElementById('teacherModalLoginId').value = teacherData.login_id;
     document.getElementById('teacherModalName').value = teacherData.name;
-    document.getElementById('teacherModalClass').value = teacherData.class_id;
+    document.getElementById('teacherModalClass').value = teacherData.class_id || '';
     document.getElementById('teacherModalPin').value = '';
   } else {
     title.textContent = '教師追加';
@@ -304,10 +308,10 @@ function renderClasses() {
     <div class="list-item">
       <div class="item-info">
         <strong>${escapeHtml(c.name)}</strong>
-        <span class="code">コード: ${escapeHtml(c.code)}</span>
+        ${c.grade ? `<span class="grade">学年: ${c.grade}</span>` : ''}
       </div>
       <div class="item-actions">
-        <button class="btn btn-sm btn-edit" data-id="${c.id}" data-name="${escapeHtml(c.name)}" data-code="${escapeHtml(c.code)}">編集</button>
+        <button class="btn btn-sm btn-edit" data-id="${c.id}" data-name="${escapeHtml(c.name)}" data-grade="${c.grade || ''}">編集</button>
         <button class="btn btn-sm btn-danger" data-id="${c.id}">削除</button>
       </div>
     </div>
@@ -317,7 +321,7 @@ function renderClasses() {
     btn.addEventListener('click', () => openClassModal({
       id: btn.dataset.id,
       name: btn.dataset.name,
-      code: btn.dataset.code
+      grade: btn.dataset.grade ? parseInt(btn.dataset.grade, 10) : null
     }));
   });
   container.querySelectorAll('.btn-danger').forEach(btn => {
@@ -434,7 +438,7 @@ function updateClassSelects() {
   selects.forEach(select => {
     const currentValue = select.value;
     select.innerHTML = '<option value="">クラスを選択</option>' +
-      classes.map(c => `<option value="${c.id}">${escapeHtml(c.name)} (${escapeHtml(c.code)})</option>`).join('');
+      classes.map(c => `<option value="${c.id}">${escapeHtml(c.name)}${c.grade ? ` (${c.grade}年)` : ''}</option>`).join('');
     select.value = currentValue;
   });
   document.getElementById('addStudentBtn').disabled = !document.getElementById('studentClassFilter').value;

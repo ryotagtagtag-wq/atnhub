@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>アテンハブ - 学校向け出席管理システム</title>
+  <link rel="stylesheet" href="shared/style.css">
+  <style>
+    .hero {
+      text-align: center;
+      padding: 4rem 1.5rem;
+      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+      color: #fff;
+      border-radius: 0 0 2rem 2rem;
+      margin-bottom: 3rem;
+    }
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .hero p {
+      font-size: 1.125rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto 2rem;
+    }
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-large {
+      padding: 1rem 2rem;
+      font-size: 1.125rem;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid #fff;
+      color: #fff;
+    }
+    .btn-outline:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .btn-solid-white {
+      background: #fff;
+      color: #2563eb;
+    }
+    .btn-solid-white:hover {
+      background: #f3f4f6;
+    }
+    .features {
+      max-width: 1000px;
+      margin: 0 auto 4rem;
+      padding: 0 1.5rem;
+    }
+    .features h2 {
+      text-align: center;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 2rem;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .feature-card {
+      background: #fff;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+    }
+    .feature-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    .feature-card h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 0.5rem;
+    }
+    .feature-card p {
+      color: #6b7280;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+    }
+    .cta-section {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      background: #f9fafb;
+      border-radius: 1.5rem;
+      margin: 0 1.5rem 3rem;
+    }
+    .cta-section h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 1rem;
+    }
+    .cta-section p {
+      color: #6b7280;
+      margin-bottom: 1.5rem;
+    }
+    .footer {
+      text-align: center;
+      padding: 2rem;
+      color: #9ca3af;
+      font-size: 0.875rem;
+      border-top: 1px solid #e5e7eb;
+      margin-top: 3rem;
+    }
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.75rem;
+      }
+      .hero p {
+        font-size: 1rem;
+      }
+      .btn-large {
+        padding: 0.875rem 1.5rem;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <h1>アテンハブ</h1>
+    </div>
+    <div class="header-right">
+      <a href="login.html" class="btn btn-secondary">ログイン</a>
+      <a href="register.html" class="btn btn-primary">新規登録</a>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="hero">
+      <h1>アテンハブ</h1>
+      <p>学校現場の声をカタチにした、シンプルで使いやすい出席管理システム。<br>先生の負担を減らし、生徒の出席状況をリアルタイムに把握できます。</p>
+      <div class="hero-buttons">
+        <a href="login.html" class="btn btn-large btn-solid-white">ログイン</a>
+        <a href="register.html" class="btn btn-large btn-outline">無料で始める</a>
+      </div>
+    </section>
+
+    <section class="features">
+      <h2>主な機能</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <h3>生徒はスマホで簡単出席</h3>
+          <p>クラスコードと出席番号、PINだけでログイン。ボタン一つで出席完了。アプリインストール不要でブラウザからすぐ使えます。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">👨‍🏫</div>
+          <h3>先生は一括で出席管理</h3>
+          <p>担当クラスの出席状況を一覧で確認。ワンクリックで出席・欠席を切り替え。記録日時と記録者も自動で保存されます。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>出席履歴を自動集計</h3>
+          <p>生徒ごとの出席履歴をカレンダー形式で表示。管理者は全クラスの出席率をリアルタイムに把握できます。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <h3>安心のセキュリティ</h3>
+          <p>6桁PIN認証、同一IDロック機能、IPレート制限、監査ログ完備。Cloudflare Workers + D1で高可用性・低レイテンシを実現。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🏫</div>
+          <h3>学校単位で完結</h3>
+          <p>学校コードでテナント分離。管理者が学校・クラス・教師・生徒を一元管理。複数校舎・複数学年にも対応。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>導入即日運用可能</h3>
+          <p>初回アクセス時に学校登録ウィザードが起動。特別なサーバー構築不要。URLを共有するだけで全教職員・生徒が即利用開始。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <h2>今すぐ無料で始めましょう</h2>
+      <p>学校コードを発行して、すぐに出席管理をデジタル化できます。</p>
+      <a href="register.html" class="btn btn-primary btn-large">新規登録（無料）</a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 アテンハブ - 学校向け出席管理システム</p>
+  </footer>
+</body>
+</html>
