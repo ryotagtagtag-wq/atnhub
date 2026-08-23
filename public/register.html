@@ -87,6 +87,8 @@
       font-size: 0.875rem;
       margin-bottom: 1rem;
       display: none;
+      white-space: pre-line;
+      line-height: 1.6;
     }
     .error-message.visible {
       display: block;
@@ -156,6 +158,12 @@
         </div>
 
         <div class="form-group">
+          <label for="schoolSlug">識別子（スラッグ） <span class="required">*</span></label>
+          <input type="text" id="schoolSlug" name="schoolSlug" required placeholder="例: yama-no-oku" pattern="[a-z0-9\-]{3,30}">
+          <p class="hint">学校を識別するIDです。小文字の英数字とハイフン（-）のみ・3〜30文字。<br>学校名を入力すると自動で入りますが、自由に変更できます（例: yama-no-oku → yama-no-oku2）。同じ値は他の学校と重複できません。</p>
+        </div>
+
+        <div class="form-group">
           <label for="adminLoginId">管理者ログインID <span class="required">*</span></label>
           <input type="text" id="adminLoginId" name="adminLoginId" required placeholder="例: admin01" pattern="[a-zA-Z0-9_\-]{3,20}">
           <p class="hint">英数字・ハイフン・アンダースコア 3-20文字</p>
@@ -191,6 +199,21 @@
     const form = document.getElementById('registerForm');
     const errorEl = document.getElementById('errorMessage');
     const successEl = document.getElementById('successMessage');
+    const schoolNameInput = document.getElementById('schoolName');
+    const slugInput = document.getElementById('schoolSlug');
+
+    // 学校名からスラッグを自動生成（ユーザーが手動編集するまで追従）
+    let slugManuallyEdited = false;
+    slugInput.addEventListener('input', () => { slugManuallyEdited = true; });
+    schoolNameInput.addEventListener('input', () => {
+      if (!slugManuallyEdited) {
+        slugInput.value = slugify(schoolNameInput.value);
+      }
+    });
+
+    function slugify(name) {
+      return name.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+    }
 
     function showError(message) {
       errorEl.textContent = message;
@@ -215,14 +238,20 @@
 
       const formData = new FormData(form);
       const schoolName = formData.get('schoolName').trim();
+      const slugRaw = (formData.get('schoolSlug') || '').trim();
       const adminLoginId = formData.get('adminLoginId').trim();
       const adminName = formData.get('adminName').trim();
       const adminPin = formData.get('adminPin');
       const adminPinConfirm = formData.get('adminPinConfirm');
 
       // バリデーション
-      if (!schoolName || !adminLoginId || !adminName || !adminPin || !adminPinConfirm) {
+      if (!schoolName || !slugRaw || !adminLoginId || !adminName || !adminPin || !adminPinConfirm) {
         showError('すべての項目を入力してください');
+        return;
+      }
+
+      if (!/^[a-z0-9-]{3,30}$/.test(slugRaw)) {
+        showError('識別子（スラッグ）の形式が正しくありません。\n・使用できる文字：小文字の英数字とハイフン（-）のみ\n・長さ：3〜30文字\n例: yama-no-oku');
         return;
       }
 
@@ -241,10 +270,9 @@
         return;
       }
 
-      // slug生成（学校名から自動生成、日本語対応）
-      let slug = schoolName.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+      // スラッグ確定（空なら学校名から、それも不可ならタイムスタンプベース）
+      let slug = slugRaw || slugify(schoolName);
       if (!slug) {
-        // 日本語のみ等でslugが空になる場合はタイムスタンプベースで生成
         slug = 'school-' + Date.now().toString(36);
       }
 
@@ -268,7 +296,20 @@
         submitBtn.textContent = '学校を登録して開始';
 
       } catch (err) {
-        showError(err.message);
+        const raw = err && err.message ? err.message : '';
+        let friendly;
+        if (raw.includes('slugは既に使用されています')) {
+          friendly = `識別子（スラッグ）「${slug}」は、すでに別の学校が使用しています。\n別の値に変更してください（例: ${slug}-2 など）。\n※学校名や管理者情報を入力し直す必要はありません。スラッグの欄だけ書き換えて再度「学校を登録して開始」を押してください。`;
+        } else if (raw.includes('入力内容が不正です')) {
+          friendly = '入力内容に不備があります。次の点を確認してください。\n・学校名：空欄になっていないか\n・識別子（スラッグ）：小文字の英数字とハイフンのみ・3〜30文字\n・管理者ログインID：英数字・ハイフン・アンダースコアで3〜20文字\n・PIN：6桁の数字';
+        } else if (raw.includes('リクエストボディ')) {
+          friendly = '送信データに不備がありました。ページを再読み込み（更新）してから、もう一度お試しください。';
+        } else if (/fetch|network|NetworkError/i.test(raw)) {
+          friendly = 'サーバーに接続できませんでした。\nインターネット接続をご確認のうえ、少し待ってからもう一度お試しください。\n解決しない場合は管理者までお問い合わせください。';
+        } else {
+          friendly = raw || 'エラーが発生しました。しばらく待ってからもう一度お試しください。';
+        }
+        showError(friendly);
         submitBtn.disabled = false;
         submitBtn.textContent = '学校を登録して開始';
       }
