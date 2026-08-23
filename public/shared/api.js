@@ -1,7 +1,7 @@
 // 共通APIクライアント
 // 本番環境ではWorkerのURLを使用、ローカル開発では相対パスを使用
 const isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-const API_BASE = isLocalhost ? '/api' : 'https://atnhub-api.ryotagtagtag-wq.workers.dev/api';
+const API_BASE = isLocalhost ? '/api' : 'https://atnhub-api.ryotagtagtag.workers.dev/api';
 
 class ApiClient {
   constructor() {
