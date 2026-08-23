@@ -14,12 +14,17 @@ const userInfo = document.getElementById('userInfo');
 const logoutBtn = document.getElementById('logoutBtn');
 
 // 初期化（Rocket Loader対策：DOMContentLoaded済みでも実行されるように）
+// UIのイベント配線を先に済ませ、認証・データ取得は失敗してもUIが生きるようにする
 async function init() {
-  await checkAuth();
   setupTabs();
   setupForms();
   setupModals();
-  await loadInitialData();
+  try {
+    await checkAuth();
+    await loadInitialData();
+  } catch (err) {
+    console.error('初期化エラー:', err);
+  }
 }
 
 if (document.readyState === 'loading') {
