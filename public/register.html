@@ -221,8 +221,9 @@
       successEl.classList.remove('visible');
     }
 
-    function showSuccess(message) {
-      successEl.textContent = message;
+    function showSuccess(html) {
+      // 成功メッセージは自前の静的マークアップのみ（schoolCodeは呼び出し側でサニタイズ済み）
+      successEl.innerHTML = html;
       successEl.classList.add('visible');
       errorEl.classList.remove('visible');
     }
@@ -289,7 +290,7 @@
           admin_name: adminName
         });
 
-        const schoolCode = result.school.code;
+        const schoolCode = String(result.school.code).replace(/[^A-Z0-9]/g, '');
         showSuccess(`学校登録完了！<br><strong>学校コード: ${schoolCode}</strong><br>このコードを教職員・生徒に共有してください。<br><br><a href="login.html" style="color:#166534; text-decoration:underline;">ログインページへ進む</a>`);
         form.reset();
         submitBtn.disabled = false;
