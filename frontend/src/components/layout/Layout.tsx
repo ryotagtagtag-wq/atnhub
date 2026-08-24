@@ -5,12 +5,12 @@ import { LogOut, LayoutDashboard, Users, UserPlus, BookOpen, Calendar } from 'lu
 
 const navigation = [
   { name: 'ダッシュボード', href: '/admin', icon: LayoutDashboard, roles: ['school_admin'] },
-  { name: 'クラス管理', href: '/admin/classes', icon: Users, roles: ['school_admin'] },
-  { name: '教師管理', href: '/admin/teachers', icon: UserPlus, roles: ['school_admin'] },
-  { name: '生徒管理', href: '/admin/students', icon: BookOpen, roles: ['school_admin'] },
-  { name: '出席確認', href: '/admin/attendance', icon: Calendar, roles: ['school_admin'] },
-  { name: '出席記録', href: '/teacher/attendance', icon: Calendar, roles: ['teacher'] },
-  { name: '担当生徒', href: '/teacher/students', icon: Users, roles: ['teacher'] },
+  { name: 'クラス管理', href: '/admin', icon: Users, roles: ['school_admin'] },
+  { name: '教師管理', href: '/admin', icon: UserPlus, roles: ['school_admin'] },
+  { name: '生徒管理', href: '/admin', icon: BookOpen, roles: ['school_admin'] },
+  { name: '出席確認', href: '/admin', icon: Calendar, roles: ['school_admin'] },
+  { name: '出席記録', href: '/teacher', icon: Calendar, roles: ['teacher'] },
+  { name: '担当生徒', href: '/teacher', icon: Users, roles: ['teacher'] },
   { name: '今日の出席', href: '/student', icon: Calendar, roles: ['student'] },
 ];
 
