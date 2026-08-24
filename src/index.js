@@ -1,11 +1,11 @@
 /**
- * atnhub API v2.1
+ * atnhub API v2.2
  * Cloudflare Workers (ES Module) + D1
  *
  * 学校向け出席管理 API。
  * - D1 バインディング: env.DB
- * - 認証: Bearer トークン（sessions テーブル / 7 日間有効）
- * - セキュリティ: 同一 identifier ロック / IP レート制限 / 監査ログ
+ * - 認証: httpOnly Cookie セッション（sessions テーブル / 7 日間有効）
+ * - セキュリティ: 同一 identifier ロック / IP レート制限 / 監査ログ / CSRF保護
  */
 
 // ---------------------------------------------------------------------------
@@ -47,13 +47,17 @@ function hexToBytes(hex) {
 
 /** JSON レスポンスヘルパー（全レスポンスに CORS ヘッダを付与する） */
 function json(data, status = 200, extraHeaders = {}, corsHeaders = {}) {
+  const headers = {
+    'Content-Type': 'application/json; charset=UTF-8',
+    ...corsHeaders,
+    ...extraHeaders,
+  };
+  if (!headers['Access-Control-Allow-Credentials']) {
+    headers['Access-Control-Allow-Credentials'] = 'true';
+  }
   return new Response(JSON.stringify(data), {
     status,
-    headers: {
-      'Content-Type': 'application/json; charset=UTF-8',
-      ...corsHeaders,
-      ...extraHeaders,
-    },
+    headers,
   });
 }
 
@@ -65,8 +69,9 @@ function json(data, status = 200, extraHeaders = {}, corsHeaders = {}) {
 function getCorsHeaders(request, env) {
   const headers = {
     'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Max-Age': '86400',
+    'Access-Control-Allow-Credentials': 'true',
     Vary: 'Origin',
   };
   const allowedOrigins = String(env.FRONTEND_ORIGIN || '')
@@ -128,12 +133,13 @@ function getClientIP(request) {
   return request.headers.get('CF-Connecting-IP') || 'unknown';
 }
 
-/** Authorization ヘッダから Bearer トークンを抽出する（無ければ null） */
-function extractBearerToken(request) {
-  const header = request.headers.get('Authorization') || '';
-  const match = /^Bearer\s+(.+)$/i.exec(header);
+/** Cookie ヘッダからセッショントークンを抽出する（無ければ null） */
+function extractSessionToken(request) {
+  const cookieHeader = request.headers.get('Cookie') || "";
+  const match = /(?:^|;\s*)session=([^;]+)/.exec(cookieHeader);
   return match ? match[1].trim() : null;
 }
+
 
 // ---------------------------------------------------------------------------
 // 暗号ユーティリティ（Web Crypto）
@@ -218,12 +224,12 @@ async function writeAuditLog(env, entry) {
 // ---------------------------------------------------------------------------
 
 /**
- * Bearer トークンで認証し、ユーザー行を返す（失敗時は null）。
+ * Cookie トークンで認証し、ユーザー行を返す（失敗時は null）。
  * - sessions JOIN users
  * - 有効期限切れセッション / 無効ユーザーは拒否
  */
 async function authenticate(request, env) {
-  const token = extractBearerToken(request);
+  const token = extractSessionToken(request);
   if (!token) return null;
   const user = await env.DB.prepare(
     `SELECT u.id, u.school_id, u.role, u.login_id, u.name, u.class_id, u.student_number, u.is_active
@@ -324,11 +330,11 @@ async function performLogin(ctx, params) {
     .bind(token, user.id)
     .run();
 
+  // httpOnly Cookie でセッショントークンを設定
+  const cookie = `session=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=604800`;
   return respond({
-    token,
-    expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
     user: sanitizeUser(user),
-  });
+  }, 200, { 'Set-Cookie': cookie });
 }
 
 /** 生徒ログイン: { school_code, class_code, student_number, pin } */
@@ -372,10 +378,12 @@ async function handleStaffLogin(ctx, expectedRole) {
 /** ログアウト: 自分のセッションを削除する */
 async function handleLogout(ctx) {
   const { env, request, respond } = ctx;
-  const token = extractBearerToken(request);
-  if (!token) return respond({ error: '認証が必要です' }, 401);
-  await env.DB.prepare('DELETE FROM sessions WHERE token = ?').bind(token).run();
-  return respond({ ok: true });
+  const token = extractSessionToken(request);
+  if (token) {
+    await env.DB.prepare('DELETE FROM sessions WHERE token = ?').bind(token).run();
+  }
+  const cookie = 'session=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0';
+  return respond({ ok: true }, 200, { 'Set-Cookie': cookie });
 }
 
 // ---------------------------------------------------------------------------
@@ -814,9 +822,30 @@ export default {
       const method = request.method;
       requestContext.url = url;
 
+      // CSRF 保護: 状態変更リクエストで Origin ヘッダを検証
+      if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(request.method)) {
+        const origin = request.headers.get('Origin');
+        const allowedOrigins = String(env.FRONTEND_ORIGIN || '')
+          .split(',')
+          .map((o) => o.trim())
+          .filter(Boolean);
+        if (origin && allowedOrigins.length > 0 && !allowedOrigins.includes(origin)) {
+          return new Response(JSON.stringify({ error: 'CSRF check failed' }), {
+            status: 403,
+            headers: { 'Content-Type': 'application/json; charset=UTF-8', ...getCorsHeaders(new Request(''), { FRONTEND_ORIGIN: '' }) },
+          });
+        }
+      }
+
+      const url = new URL(request.url);
+      // 末尾スラッシュを正規化してルーティング判定に使う
+      const path = url.pathname.length > 1 ? url.pathname.replace(/\/+$/, '') : '/';
+      const method = request.method;
+      requestContext.url = new URL(request.url);
+
       // ---- 公開エンドポイント ----
       if (method === 'GET' && path === '/') {
-        return respond({ ok: true, name: 'atnhub-api', version: '2.1' });
+        return respond({ ok: true, name: 'atnhub-api', version: '2.2' });
       }
 
       if (method === 'POST' && path === '/api/schools/bootstrap') {

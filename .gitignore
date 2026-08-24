@@ -26,3 +26,5 @@ npm-debug.log*
 # Build outputs
 dist/
 build/
+# Playwright MCP artifacts
+.playwright-mcp/
