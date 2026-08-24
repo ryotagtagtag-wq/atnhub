@@ -576,8 +576,18 @@ async function handleCreateTeacher(ctx) {
     { ok: true, teacher: { id: teacherUserId, login_id: loginId, name, class_id: classId, role: 'teacher' } },
     201,
   );
+}/**
+ * GET /api/teachers（管理者）— 教師一覧を取得する
+ */
+async function handleListTeachers({ env, user, respond }) {
+  if (user.role !== 'school_admin') return respond({ error: '権限がありません' }, 403);
+  const rows = await env.DB.prepare(
+    `SELECT id, name, class_id, is_active FROM users WHERE school_id = ? AND role = 'teacher' ORDER BY id`,
+  )
+    .bind(user.school_id)
+    .all();
+  return respond({ teachers: rows.results ?? [] });
 }
-
 // ---------------------------------------------------------------------------
 // 生徒管理
 // ---------------------------------------------------------------------------
@@ -872,8 +882,9 @@ export default {
         if (method === 'POST') return await handleCreateClass(requestContext);
       }
 
-      if (path === '/api/teachers' && method === 'POST') {
-        return await handleCreateTeacher(requestContext);
+      if (path === '/api/teachers') {
+        if (method === 'GET') return await handleListTeachers(requestContext);
+        if (method === 'POST') return await handleCreateTeacher(requestContext);
       }
 
       if (path === '/api/students') {

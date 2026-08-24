@@ -80,7 +80,7 @@ class ApiClient {
   }
 
   async me(): Promise<User> {
-    return this.request<User>('/me');
+    return this.request<{ user: User }>('/me').then((r) => r.user);
   }
 
   // Bootstrap
@@ -93,7 +93,7 @@ class ApiClient {
 
   // Classes
   async listClasses(): Promise<Class[]> {
-    return this.request<Class[]>('/classes');
+    return this.request<{ classes: Class[] }>('/classes').then((r) => r.classes ?? []);
   }
 
   async createClass(data: { name: string; grade?: number }): Promise<Class> {
@@ -105,7 +105,7 @@ class ApiClient {
 
   // Teachers
   async listTeachers(): Promise<Teacher[]> {
-    return this.request<Teacher[]>('/teachers');
+    return this.request<{ teachers: Teacher[] }>('/teachers').then((r) => r.teachers ?? []);
   }
 
   async createTeacher(data: {
@@ -122,7 +122,7 @@ class ApiClient {
 
   // Students
   async listStudents(classId: number): Promise<Student[]> {
-    return this.request<Student[]>(`/students?class_id=${classId}`);
+    return this.request<{ students: Student[] }>(`/students?class_id=${classId}`).then((r) => r.students ?? []);
   }
 
   async createStudent(data: {
@@ -139,7 +139,7 @@ class ApiClient {
 
   // Attendance
   async getAttendance(classId: number, date: string): Promise<AttendanceResponse[]> {
-    return this.request<AttendanceResponse[]>(`/attendance?class_id=${classId}&date=${date}`);
+    return this.request<{ attendance: AttendanceResponse[] }>(`/attendance?class_id=${classId}&date=${date}`).then((r) => r.attendance ?? []);
   }
 
   async recordAttendance(data: {
