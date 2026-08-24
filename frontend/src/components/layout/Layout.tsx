@@ -1,14 +1,9 @@
 import { Outlet, Link, useLocation } from 'react-router';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '../../components/ui';
-import { LogOut, LayoutDashboard, Users, UserPlus, BookOpen, Calendar } from 'lucide-react';
+import { LogOut, Calendar, Users } from 'lucide-react';
 
 const navigation = [
-  { name: 'ダッシュボード', href: '/admin', icon: LayoutDashboard, roles: ['school_admin'] },
-  { name: 'クラス管理', href: '/admin', icon: Users, roles: ['school_admin'] },
-  { name: '教師管理', href: '/admin', icon: UserPlus, roles: ['school_admin'] },
-  { name: '生徒管理', href: '/admin', icon: BookOpen, roles: ['school_admin'] },
-  { name: '出席確認', href: '/admin', icon: Calendar, roles: ['school_admin'] },
   { name: '出席記録', href: '/teacher', icon: Calendar, roles: ['teacher'] },
   { name: '担当生徒', href: '/teacher', icon: Users, roles: ['teacher'] },
   { name: '今日の出席', href: '/student', icon: Calendar, roles: ['student'] },
