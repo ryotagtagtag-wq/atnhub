@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>アテンハブ - 生徒ダッシュボード</title>
+  <link rel="stylesheet" href="../shared/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <h1>アテンハブ</h1>
+      <span class="role-badge student">生徒</span>
+    </div>
+    <div class="header-right">
+      <span id="userInfo"></span>
+      <button type="button" id="logoutBtn" class="btn btn-secondary">ログアウト</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="student-dashboard">
+      <div class="student-info">
+        <h2 id="studentName">読み込み中...</h2>
+        <p id="studentClass"></p>
+        <p id="studentNumber"></p>
+      </div>
+
+      <div class="attendance-status">
+        <h3>今日の出席状況</h3>
+        <div id="todayStatus" class="status-card">
+          <span class="status-icon" id="statusIcon">⏳</span>
+          <span class="status-text" id="statusText">確認中...</span>
+        </div>
+        <button type="button" id="checkInBtn" class="btn btn-primary btn-large hidden" onclick="checkIn()">出席する</button>
+      </div>
+
+      <div class="attendance-history">
+        <h3>出席履歴</h3>
+        <div id="historyList" class="list"></div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="./student.js?v=20260823" data-cfasync="false"></script>
+</body>
+</html>

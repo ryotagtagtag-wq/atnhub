@@ -1,0 +1,19 @@
+/register.html
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+
+/login.html
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+
+/admin/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+
+/teacher/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+
+/student/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
