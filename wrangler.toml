@@ -12,5 +12,5 @@ database_id = "6de7d6b1-ded4-4471-8bd2-d242c6980f5d"  # 作成後に記入
 
 # 環境変数（本番用は wrangler secret put で設定）
 [vars]
-ENVIRONMENT = "development"
-# CORS_ALLOWED_ORIGINS = "https://atnhub.pages.dev"  # 本番では特定オリジンのみ
+ENVIRONMENT = "production"
+FRONTEND_ORIGIN = "https://atnhub.ryopc.org"

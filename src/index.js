@@ -830,18 +830,9 @@ export default {
           .map((o) => o.trim())
           .filter(Boolean);
         if (origin && allowedOrigins.length > 0 && !allowedOrigins.includes(origin)) {
-          return new Response(JSON.stringify({ error: 'CSRF check failed' }), {
-            status: 403,
-            headers: { 'Content-Type': 'application/json; charset=UTF-8', ...getCorsHeaders(new Request(''), { FRONTEND_ORIGIN: '' }) },
-          });
+          return respond({ error: 'CSRF check failed' }, 403);
         }
       }
-
-      const url = new URL(request.url);
-      // 末尾スラッシュを正規化してルーティング判定に使う
-      const path = url.pathname.length > 1 ? url.pathname.replace(/\/+$/, '') : '/';
-      const method = request.method;
-      requestContext.url = new URL(request.url);
 
       // ---- 公開エンドポイント ----
       if (method === 'GET' && path === '/') {
