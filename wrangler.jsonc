@@ -2,7 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "atnhub",
   "compatibility_date": "2024-08-25",
-  "pages_build_output_dir": "./dist",
+  "pages_build_output_dir": "dist",
   "d1_databases": [
     {
       "binding": "DB",
