@@ -1,4 +1,5 @@
 import type {
+  School,
   User,
   Class,
   Teacher,
@@ -89,6 +90,10 @@ class ApiClient {
       method: 'POST',
       body: JSON.stringify(data),
     });
+  }
+
+  async getSchool(schoolId: number): Promise<School> {
+    return this.request<School>(`/schools/${schoolId}`);
   }
 
   // Classes

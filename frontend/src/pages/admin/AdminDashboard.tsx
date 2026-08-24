@@ -712,6 +712,12 @@ function SchoolSettingsTab() {
     return <EmptyState message="ユーザー情報を読み込めませんでした。" />;
   }
 
+  const schoolQuery = useQuery({
+    queryKey: ['school', user.school_id],
+    queryFn: () => api.getSchool(user.school_id as number),
+    enabled: !!user.school_id,
+  });
+
   const handleLogout = async (): Promise<void> => {
     await logout();
     navigate('/login', { replace: true });
@@ -727,20 +733,28 @@ function SchoolSettingsTab() {
         </Button>
       </CardHeader>
       <CardContent>
-        <dl className="divide-y divide-gray-200 dark:divide-gray-700">
-          {[
-            ['お名前', user.name],
-            ['ログインID', user.login_id],
-            ['役割', ROLE_LABELS[user.role]],
-            ['学校ID', String(user.school_id ?? '—')],
-            ...(user.role === 'student' ? ([['所属クラスID', String(user.class_id ?? '—')]] as const) : []),
-          ].map(([label, value]) => (
-            <div key={label} className="flex items-center justify-between py-3 text-sm">
-              <dt className="text-gray-500 dark:text-gray-400">{label}</dt>
-              <dd className="font-medium text-gray-900 dark:text-white">{value}</dd>
-            </div>
-          ))}
-        </dl>
+        {schoolQuery.isPending ? (
+          <LoadingBox />
+        ) : schoolQuery.isError ? (
+          <ErrorAlert message="学校情報の取得に失敗しました。" />
+        ) : (
+          <dl className="divide-y divide-gray-200 dark:divide-gray-700">
+            {[
+              ['お名前', user.name],
+              ['ログインID', user.login_id],
+              ['役割', ROLE_LABELS[user.role]],
+              ['学校名', schoolQuery.data?.name ?? '—'],
+              ['学校コード', schoolQuery.data?.code ?? '—'],
+              ['スラッグ', schoolQuery.data?.slug ?? '—'],
+              ...(user.role === 'student' ? ([['所属クラスID', String(user.class_id ?? '—')]] as const) : []),
+            ].map(([label, value]) => (
+              <div key={label} className="flex items-center justify-between py-3 text-sm">
+                <dt className="text-gray-500 dark:text-gray-400">{label}</dt>
+                <dd className="font-medium text-gray-900 dark:text-white">{value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
       </CardContent>
     </Card>
   );
