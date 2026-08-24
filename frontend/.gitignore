@@ -31,3 +31,10 @@ coverage/
 *.pem
 .vercel
 .netlify
+
+# Large binaries
+**/workerd
+**/esbuild
+**/sharp
+**/miniflare
+**/wrangler
