@@ -114,6 +114,13 @@ export default function LoginPage() {
                 </div>
               </div>
             </div>
+
+            <p className="text-center text-sm text-gray-500">
+              新しい学校を登録する方は{' '}
+              <a href="/register" className="text-primary-600 hover:text-primary-700 font-medium">
+                こちらから学校登録
+              </a>
+            </p>
           </CardContent>
         </Card>
 

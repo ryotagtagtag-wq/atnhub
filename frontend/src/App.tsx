@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/auth/LoginPage'
+import RegisterPage from './pages/auth/RegisterPage'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import TeacherDashboard from './pages/teacher/TeacherDashboard'
 import StudentDashboard from './pages/student/StudentDashboard'
@@ -33,6 +34,7 @@ function AppRoutes() {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
       <Route path="/dashboard" element={
         <ProtectedRoute allowedRole="teacher">
           <TeacherDashboard />
